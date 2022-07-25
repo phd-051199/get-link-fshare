@@ -4,8 +4,13 @@ $(document).ready(function () {
         $("#create").removeAttr("disabled");
         $("#fileName").html("Generated Link");
     });
-    $("#download").click(function () {
+    $("#download").click(function (e) {
+        e.preventDefault();
         document.location.href = $("#generated").val();
+    });
+    $("#openInVLC").click(function (e) {
+        e.preventDefault();
+        document.location.href = `vlc://${$("#generated").val()}`;
     });
     $("#create").click(function () {
         var regEx = /^https:\/\/www\.fshare\.vn\/file\/.+/;
@@ -30,9 +35,11 @@ $(document).ready(function () {
                     );
                     $("#copy").removeAttr("disabled");
                     $("#download").removeAttr("disabled");
+                    $("#openInVLC").removeAttr("disabled");
                 } else {
                     $("#copy").prop("disabled", "disabled");
                     $("#download").prop("disabled", "disabled");
+                    $("#openInVLC").prop("disabled", "disabled");
                     if (res.code == 123) {
                         $("#generated").val("Invalid file password!");
 
@@ -48,7 +55,8 @@ $(document).ready(function () {
             $("#urlError").show();
         }
     });
-    $(".js-textareacopybtn").click(function () {
+    $(".js-textareacopybtn").click(function (e) {
+        e.preventDefault();
         var copyTextarea = $(this).data("id");
         $("#" + copyTextarea)[0].select();
         try {
