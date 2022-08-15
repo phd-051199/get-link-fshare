@@ -2,6 +2,7 @@ import express from "express";
 import axios from "axios";
 import path from "path";
 import "dotenv/config";
+import cors from "cors";
 
 const app = express();
 
@@ -11,6 +12,7 @@ const { EMAIL, PASSWORD, APP_KEY, USER_AGENT } = process.env;
 
 app.use(express.json());
 app.use(express.static("public"));
+app.use(cors("*"));
 
 const option = (req, token, session_id) => {
   return {
