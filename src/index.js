@@ -78,4 +78,37 @@ app.get("/generate", async (req, res) => {
   }
 });
 
+app.get("/getFolder/:linkcode", async (req, res) => {
+  try {
+    let result = await axios({
+      method: "get",
+      url: `https://www.fshare.vn/api/v3/files/folder?linkcode=${req.params.linkcode}&sort=type%2Cname`,
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    return res.json(result.data.items);
+  } catch (error) {
+    if (error.response?.data?.code === 404) {
+      return res.json(error.response.data);
+    }
+    return res.json({ error: error });
+  }
+})
+
+app.get("/searchFilm/:filmName", async (req, res) => {
+  try {
+    let result = await axios({
+      method: "get",
+      url: `https://thuvienhd.com/?feed=timfsharejson&search=${encodeURIComponent(req.params.filmName)}`,
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    return res.json(result.data.data);
+  } catch (error) {
+    return res.json({ error: error });
+  }
+})
+
 app.listen(process.env.PORT || 8080, () => login());
