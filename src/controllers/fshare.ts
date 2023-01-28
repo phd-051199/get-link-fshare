@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import path from "path";
 import get from "lodash/get";
 import { HttpStatusCode } from "axios";
+import { autoComplete } from "../clients/film";
 
 const client = FshareClient();
 
@@ -41,7 +42,7 @@ export const getFolder = async (request: Request, response: Response) => {
     const result = await client.getFolder(request.body.code);
     return response.json(result);
   } catch (error) {
-    return response.json({ error: error });
+    return response.json({ error });
   }
 };
 
@@ -50,7 +51,19 @@ export const searchFilm = async (request: Request, response: Response) => {
     const result = await search(request.body.filmName);
     return response.json(result);
   } catch (error) {
-    return response.json({ error: error });
+    return response.json({ error });
+  }
+};
+
+export const autoCompleteFilm = async (
+  request: Request,
+  response: Response
+) => {
+  try {
+    const result = await autoComplete(<string>request.query.keyword);
+    return response.json(result);
+  } catch (error) {
+    return response.json({ error });
   }
 };
 
@@ -59,6 +72,6 @@ export const searchGoogle = async (request: Request, response: Response) => {
     const result = await googleSearch(request.body.q);
     return response.json(result);
   } catch (error) {
-    return response.json({ error: error });
+    return response.json({ error });
   }
 };

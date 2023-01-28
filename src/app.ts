@@ -16,6 +16,6 @@ app
       origin,
     })
   )
-  .use(apiRouter);
+  .use("/api", apiRouter);
 
 export default app;
