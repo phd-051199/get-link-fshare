@@ -2,8 +2,6 @@ import { FshareClient, googleSearch, search } from "../clients";
 import { fshareFactory } from "../factory";
 import { Request, Response } from "express";
 import path from "path";
-import get from "lodash/get";
-import { HttpStatusCode } from "axios";
 import { autoComplete } from "../clients/film";
 
 const client = FshareClient();
@@ -23,16 +21,8 @@ export const refreshToken = () => {
 export const getFile = async (request: Request, response: Response) => {
   try {
     const result = await client.getFile(request.body);
-    if (result.code === 123) {
-      return response.json(result);
-    } else {
-      return response.json({ ...result, code: HttpStatusCode.Ok });
-    }
+    return response.json(result);
   } catch (error) {
-    const errorData = get(error, "response.data");
-    if (get(error, "response.data.code") === HttpStatusCode.NotFound) {
-      return response.json(errorData);
-    }
     return response.json({ error });
   }
 };

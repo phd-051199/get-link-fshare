@@ -1,6 +1,5 @@
-const isFile = /^https:\/\/www\.fshare\.vn\/file\/.+/;
-const isFolder = /^https:\/\/www\.fshare\.vn\/folder\/.+/;
-let isLight = true;
+const isFile = /^(http|https):\/\/(www\.)?fshare\.vn\/file\/.+/;
+const isFolder = /^(http|https):\/\/(www\.)?fshare\.vn\/folder\/.+/;
 
 $(document).ready(function () {
   $.fn.main.formValidation();
@@ -21,6 +20,7 @@ $.fn.extend({
         resolverSettings: {
           url: "/api/ac",
           queryKey: "keyword",
+          requestThrottling: 300,
         },
       });
     },
@@ -90,13 +90,6 @@ $.fn.extend({
         document.location.href = `vlc://${$("#generated").val()}`;
       });
 
-      $("#useProxy").on("click", function (e) {
-        e.preventDefault();
-        $("#generated").val(
-          $("#generated").val().replace("fshare.vn", "proxy.phamduy.me")
-        );
-      });
-
       $("#create").on("click", function (e) {
         e.preventDefault();
         if (!$("#mainForm").valid()) return;
@@ -114,26 +107,29 @@ $.fn.extend({
             { url: inputURL, password: password },
             function (res) {
               $.fn.main.hideLoading($this, "Get Link");
-              if (res.code == 200) {
-                $("#generated").val(
-                  res.location.replace("http://", "https://")
-                );
-                $("#fileName").html(
-                  `File name: <span class='text-success'>${decodeURI(
-                    $("#generated").val().split("/").pop()
-                  )}</span>`
-                );
-                $(".action-btn").removeAttr("disabled");
-              } else {
+              if (!res.location) {
                 $(".action-btn").prop("disabled", "disabled");
-                if (res.code == 123) {
-                  $("#generated").val("Invalid file password!");
-                } else if (res.code == 404) {
-                  $("#generated").val("File not found!");
-                } else {
-                  $("#generated").val("Something went wrong!");
+                let msg = "";
+                switch (res.code) {
+                  case 123:
+                    msg = "Invalid file password!";
+                    break;
+                  case 404:
+                    msg = "File not found!";
+                    break;
+                  default:
+                    msg = "Something went wrong!";
+                    break;
                 }
+                return $("#generated").val(msg);
               }
+              $("#generated").val(res.location.replace("http://", "https://"));
+              $("#fileName").html(
+                `File name: <span class='text-success'>${decodeURI(
+                  $("#generated").val().split("/").pop()
+                )}</span>`
+              );
+              $(".action-btn").removeAttr("disabled");
             }
           );
         } else if (isFolder.test(inputURL)) {
@@ -160,19 +156,6 @@ $.fn.extend({
         e.preventDefault();
         const outputUrl = $("#generated").val();
         navigator.clipboard.writeText(outputUrl);
-      });
-
-      $("#fshareLogo").dblclick(function (e) {
-        e.preventDefault();
-        if (isLight) {
-          $("body").css("background-color", "#242424");
-          $("label").css("color", "white");
-          isLight = false;
-        } else {
-          $("body").css("background-color", "");
-          $("label").css("color", "");
-          isLight = true;
-        }
       });
 
       $("#filmSearch").on("click", function (e) {
