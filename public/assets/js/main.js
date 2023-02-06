@@ -1,5 +1,5 @@
-const isFile = /^(http|https):\/\/(www\.)?fshare\.vn\/file\/.+/;
-const isFolder = /^(http|https):\/\/(www\.)?fshare\.vn\/folder\/.+/;
+const isFile = /(https?:\/\/)?(www\.)?fshare\.vn\/file\/.+/;
+const isFolder = /(https?:\/\/)?(www\.)?fshare\.vn\/folder\/.+/;
 
 $(document).ready(function () {
   $.fn.main.formValidation();
@@ -93,11 +93,11 @@ $.fn.extend({
       $("#create").on("click", function (e) {
         e.preventDefault();
         if (!$("#mainForm").valid()) return;
-        const inputURL =
-          isFile.test($("#original").val()) ||
-          isFolder.test($("#original").val())
-            ? $("#original").val()
-            : `https://${$("#original").val()}`;
+        const original = $("#original").val();
+        const code = original.split("?")[0].split("/").pop();
+        const inputURL = `https://www.fshare.vn/${
+          isFile.test(original) ? "file" : "folder"
+        }/${code}`;
         const password = $("#password").val();
         const $this = $(this);
         $.fn.main.showLoading($this);

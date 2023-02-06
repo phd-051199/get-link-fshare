@@ -34,6 +34,7 @@ instance.interceptors.response.use(
       originalRequest._retry = true;
       const data = await refreshToken();
       originalRequest.data = setNewToken(originalRequest.data, data.token);
+      originalRequest.headers.Cookie = `session_id=${data.session_id}`;
       return instance(originalRequest);
     }
     return Promise.reject(error);
